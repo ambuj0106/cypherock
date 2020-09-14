@@ -1,5 +1,4 @@
 #include<bits/stdc++.h>
-//#include"C:\Users\AMBUJ\AppData\Roaming\Sublime Text 3\Packages\User\BTC_btc.h"
 using namespace std;
 typedef struct 
 {
@@ -10,14 +9,15 @@ typedef struct
     uint8_t sequence[4];
 }unsigned_txn_input;
 
-typedef struct 
-{
-    uint8_t previous_txn_hash[32];
-    uint8_t previous_output_index[4];
-    uint8_t script_length[1];
-    uint8_t script_sig[128];
-    uint8_t sequence[4];
-}signed_txn_input;
+//I DIDN't USE THIS ONE
+//typedef struct 
+//{
+//    uint8_t previous_txn_hash[32];
+//    uint8_t previous_output_index[4];
+//    uint8_t script_length[1];
+//    uint8_t script_sig[128];
+//    uint8_t sequence[4];
+//}signed_txn_input;
 
 typedef struct 
 {
@@ -35,30 +35,117 @@ typedef struct
     txn_output *output;
     uint8_t locktime[4];
     uint8_t sighash[4];
-
 }unsigned_txn;
+
+uint8_t charToint(char ch){
+    if(ch>='0' and ch<='9')
+	return ch-'0';
+    else if(ch>='a' and ch<='f')
+	return ch-'a'+10;
+}
+
+uint8_t parse(char a, char b){
+    uint8_t val = charToint(a);
+    val <<= 4;
+    val += charToint(b);
+    return val;
+}
+
+void hex_string_to_byte_array(
+	const char *hex_string, 
+	uint32_t string_length, 
+	uint8_t *byte_array)
+{
+    int byte_array_ptr = 0;
+    for(int i=0; i<string_length; i+=2){
+	uint8_t val = parse(hex_string[i],hex_string[i+1]);
+	byte_array[byte_array_ptr++] = val;
+    }
+    return;
+}
+
+const int MAXSZ = 1000;
 
 int main()
 {
-  string s;
-  char a;
- 
-  cin>>s;
-  int n=s.size();
-  vector<uint8_t> data(s.begin(),s.end());
-  int i=0;
-  unsigned_txn utt[n/4+1];
+    char *hex_string = new char[MAXSZ];
+    scanf("%s",hex_string);
 
-  for(int i=0;i<n/4;i++)
-  {
-  for(int j=0;i<4;j++)
-   utt[i].network_version[j]=data[i++];
-  
-  cout<<(char)utt[i].network_version[0]<<endl;
-  
-  }
+    uint32_t string_length = strlen(hex_string);
 
-  return 0;
+    uint8_t *byte_array = new uint8_t[MAXSZ];
+
+    hex_string_to_byte_array(hex_string,string_length,byte_array);
+
+    uint32_t byte_array_length = string_length/2;
+
+    //Print byte array
+    //for(int i=0; i<byte_array_length; ++i){
+    //    printf("%02x %d \n", byte_array[i], byte_array[i] );
+    //}
+    //cout<<endl;
+
+    //TRANSACTION
+    unsigned_txn txn;
+    int bap = 0; //ptr to byte array
+    for(int i=0; i<4; ++i){
+        txn.network_version[i] = byte_array[bap++];
+    }
+
+    //INPUT
+    txn.input_count[0] = byte_array[bap++];
+    txn.input = new unsigned_txn_input[txn.input_count[0]];
+    for(int i=0; i<txn.input_count[0]; ++i){
+	for(int j=0; j<32; ++j){
+	    txn.input[i].previous_txn_hash[j] = 
+		byte_array[bap++];
+	}
+	for(int j=0; j<4; ++j){
+	    txn.input[i].previous_output_index[j] = 
+		byte_array[bap++];
+	}
+	for(int j=0; j<1; ++j){
+	    txn.input[i].script_length[j] = 
+		byte_array[bap++];
+	}
+	for(int j=0; j<25; ++j){
+	    txn.input[i].script_public_key[j] = 
+		byte_array[bap++];
+	}
+	for(int j=0; j<4; ++j){
+	    txn.input[i].sequence[j] = 
+		byte_array[bap++];
+	}
+    }
+
+    //OUTPUT
+    txn.output_count[0] = byte_array[bap++];
+    txn.output = new txn_output[txn.output_count[0]];
+    for(int i=0; i<txn.output_count[0]; ++i){
+	for(int j=0; j<8; ++j){
+	    txn.output[i].value[j] = 
+		byte_array[bap++];
+	}
+	for(int j=0; j<1; ++j){
+	    txn.output[i].script_length[j] = 
+		byte_array[bap++];
+	}
+	for(int j=0; j<25; ++j){
+	    txn.output[i].script_public_key[j] = 
+		byte_array[bap++];
+	}
+    }
+    for(int i=0; i<4; ++i){
+        txn.locktime[i] = byte_array[bap++];
+    }
+    for(int i=0; i<4; ++i){
+        txn.sighash[i] = byte_array[bap++];
+    }
 
 
+    //Transaction created, use it below here
+
+    
+    return 0;
 }
+
