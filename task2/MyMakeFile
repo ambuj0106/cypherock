@@ -1,0 +1,16 @@
+# -*- MakeFile -*-
+
+# target : dependencies
+#		action
+
+src = $(wildcard src/*.c) \
+	$(wildcard src/../main.c)
+
+obj = $(src: .c=.o)
+
+LDFLAGS = -lm -lpng
+
+myprog: $(obj)
+	$(CC) -o $@ $^ $(LDFLAGS)
+	
+	
