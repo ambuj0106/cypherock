@@ -27,18 +27,18 @@ int main()
     
 
     //master node-> purpose node
-	int pn=hdnode_private_ckd(master_node, (uint32_t)44); 
+	int pn=hdnode_private_ckd(master_node, 0x8000002c); 
 	//printf("%d\n",master_node->depth);
    //purpose node-> coin node	
-   int cn=hdnode_private_ckd(master_node, (uint32_t)1);
+   int cn=hdnode_private_ckd(master_node, 0x80000001);
    //coin node-> account  node
-   int accn=hdnode_private_ckd(master_node, (uint32_t)0);
+   int accn=hdnode_private_ckd(master_node, 0x80000000);
    //acc node -> chain node
-   int chainn=hdnode_private_ckd(master_node, (uint32_t)0);
+   int chainn=hdnode_private_ckd(master_node, 0x00000000);
    //chain node-> address node
    //printf("%d\n",master_node->depth);
    
-   int addn=hdnode_private_ckd(master_node, (uint32_t)0);
+   int addn=hdnode_private_ckd(master_node, 0x00000000);
 // filling address node public key 
    hdnode_fill_public_key(master_node);
    
