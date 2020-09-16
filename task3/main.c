@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include "bip39.h"
 #include "bip32.h"
+#include<string.h>
 int main()
 {
 	const char passphrase[]="",c[]="client power maple tonight gossip apart kite seed rebuild museum ankle cheese coil note property account aware monkey spread brief follow normal unit inside";
@@ -11,7 +12,13 @@ int main()
      HDNode *master_node=(HDNode *)malloc(sizeof(HDNode));
       
       mnemonic_to_seed(c, passphrase,seed,(current,total));
-
+   
+   //   for(int i=0;i<64;i++)
+   // {
+   // 	printf("%x",seed[i]);
+   // }
+   //  printf("\n");
+ 
       hdnode_from_seed(seed,64,"secp256k1",master_node);
       
     
