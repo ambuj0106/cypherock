@@ -45,7 +45,7 @@ int main()
    //printing public key
    for(int i=0;i<32;i++)
    {
-   	printf("%x",master_node->private_key[i]);
+   	printf("%x",master_node->public_key[i]);
    }
     printf("\n");
     
